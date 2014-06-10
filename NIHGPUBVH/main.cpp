@@ -5,11 +5,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 using namespace std;
 using namespace nih;
-
-
-
 int main()
-{
+{	
 	cout<<"hello bvh"<<endl;
 	
 	// traverse both trees top-down to see whether there's any inconsistencies...
