@@ -11,7 +11,7 @@ int main()
 	
 	// traverse both trees top-down to see whether there's any inconsistencies...
 	pyrfrustum_t frustum;
-	// Projection matrix : 45¡ã Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+	// Projection matrix : 45ï¿½ï¿½ Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
 	glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.01f, 50.0f);
 	// Camera matrix
 	glm::mat4 View       = glm::lookAt(
