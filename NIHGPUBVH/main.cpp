@@ -7,7 +7,7 @@ using namespace std;
 using namespace nih;
 int main()
 {	
-	cout<<"hello bvh"<<endl;
+	cout<<"hello bvh!"<<endl;
 	
 	// traverse both trees top-down to see whether there's any inconsistencies...
 	pyrfrustum_t frustum;
