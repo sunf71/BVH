@@ -38,6 +38,26 @@ uint32 loadObj(const char* fileName, thrust::host_vector<Vector3f>& h_points, th
 	return num;
 }
 
+//load obj model
+//@h_p123 [out] 模型每个三角形的3个顶点
+//@return 模型三角形数量
+uint32 loadObj(const char* fileName, thrust::host_vector<Vector3f>& h_p123)
+{
+	GLMmodel* model = glmReadOBJ(fileName);
+	uint32 num = model->numtriangles;
+	for(int i=0; i<num; i++)
+	{		
+		
+		for (int j=0; j<3; j++)
+		{
+			float* tmp = model->vertices+model->triangles[i].vindices[j]*3;
+			Vector3f p(tmp);
+			h_p123.push_back(p);			
+		}			
+	}
+	delete model;
+	return num;
+}
 
 void loadRandom(int num, thrust::host_vector<Vector3f>& h_points, thrust::host_vector<Bbox3f>& h_boxes, Bbox3f& BBox)
 {

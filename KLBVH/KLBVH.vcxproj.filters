@@ -22,11 +22,11 @@
       <Filter>cuda</Filter>
     </ClInclude>
     <ClInclude Include="bvh.h" />
-    <ClInclude Include="objLoader.h" />
     <ClInclude Include="glmModel.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="frustum.h" />
     <ClInclude Include="frustum_inline.h" />
+    <ClInclude Include="objLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="cuda">

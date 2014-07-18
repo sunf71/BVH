@@ -170,4 +170,22 @@ namespace nih {
 		std::cout<<"min "<<bbox.m_min[0]<<","<<bbox.m_min[1]<<","<<bbox.m_min[2];
 		std::cout<<" max "<<bbox.m_max[0]<<","<<bbox.m_max[1]<<","<<bbox.m_max[2]<<std::endl;
 	}
+	template <typename Vector_t>
+	inline Bbox<Vector_t> Add_Bbox<Vector_t>::operator()(const Bbox<Vector_t>& a, const Bbox<Vector_t>& b) const
+	{
+        Bbox<Vector_t> r;
+		r.insert(a);
+		r.insert(b);
+        return r;
+    }
+	template <typename Vector_t>
+	bool BoxesIntersect(const Bbox<Vector_t>& a, const Bbox<Vector_t>& b) 
+	{
+		return (a.m_max[0] > b.m_min[0]&&
+			a.m_min[0] < b.m_max[0] &&
+			a.m_max[1] > b.m_min[1] &&
+			a.m_min[1] < b.m_max[1] &&
+			a.m_max[2] > b.m_min[2] &&
+			a.m_min[2] < b.m_max[2]);
+	}
 } // namespace nih

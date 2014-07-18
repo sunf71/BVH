@@ -161,6 +161,13 @@ FORCE_INLINE NIH_HOST_DEVICE size_t largest_axis(const Bbox<Vector_t>& bbox);
 
 /*! \}
  */
+template <typename Vector_t>
+struct Add_Bbox {
+   FORCE_INLINE  NIH_HOST_DEVICE Bbox<Vector_t> operator()(const Bbox<Vector_t>& a, const Bbox<Vector_t>& b) const ;
+};
+
+template <typename Vector_t>
+    FORCE_INLINE  NIH_HOST_DEVICE bool BoxesIntersect(const Bbox<Vector_t>& a, const Bbox<Vector_t>& b);
 
 } // namespace nih
 

@@ -9,6 +9,37 @@ namespace nih
 	//Frustum plane
 	typedef struct plane
 	{
+		NIH_HOST_DEVICE plane(){}
+		NIH_HOST_DEVICE plane(const Vector3f& p1, const Vector3f& p2, const Vector3f& p3)
+		{
+			Vector3f norm = cross((p3-p2),(p1-p2));
+			norm = normalize(norm);
+			a = norm[0];
+			b = norm[1];
+			c = norm[2];
+			d = -dot(p1,norm);
+		}
+		//点到平面的距离
+		NIH_HOST_DEVICE float distance(const Vector3f& p)
+		{
+			return dot(p,Vector3f(a,b,c))+d;
+		}
+
+		//求经过点p0和p1的直线和平面交点
+		NIH_HOST_DEVICE bool intersect(const Vector3f& p0, const Vector3f& p1, Vector3f& intersec)
+		{
+			Vector3f dir = p1-p0;
+			dir = normalize(dir);
+			Vector3f fnormal(a,b,c);
+
+			float v = dot(fnormal,dir);
+			if (abs(v)<1e-4)
+				return false;
+
+			float t = (dot(p0,fnormal)+d)/-v;
+			intersec = p0 + dir*t;
+			return true;
+		}
 		float a;
 		float b;
 		float c;
@@ -21,6 +52,19 @@ namespace nih
 	{
 		plane_t planes[6];
 	} pyrfrustum_t;
+
+	struct TriFrustum
+	{
+		NIH_HOST_DEVICE TriFrustum()
+		{
+			id = uint32(-1);
+			min = Vector3f(2e10);
+			max = Vector3f(-2e-10);
+		}
+		uint32 id;
+		plane_t planes[5];
+		Vector3f min,max,center;
+	};
 
 	//Pyramidal Frustum Corners
 	typedef struct pyrcorners
@@ -119,7 +163,56 @@ namespace nih
 		return 2;
 	}
 	
+	FORCE_INLINE NIH_HOST_DEVICE int Intersect( TriFrustum& f, Bbox3f& a )
+	{
+		
+		//if( AABBenclosing( a, c ) )
+		//	return true;
 
+		Vector3f box[8];
+		box[0][0] = a.m_min[0]; box[0][1] = a.m_min[1]; box[0][2] = a.m_min[2];
+		box[1][0] = a.m_max[0]; box[1][1] = a.m_min[1]; box[1][2] = a.m_min[2];
+		box[2][0] = a.m_min[0]; box[2][1] = a.m_max[1]; box[2][2] = a.m_min[2];
+		box[3][0] = a.m_max[0]; box[3][1] = a.m_max[1]; box[3][2] = a.m_min[2];
+		box[4][0] = a.m_min[0]; box[4][1] = a.m_min[1]; box[4][2] = a.m_max[2];
+		box[5][0] = a.m_max[0]; box[5][1] = a.m_min[1]; box[5][2] = a.m_max[2];
+		box[6][0] = a.m_min[0]; box[6][1] = a.m_max[1]; box[6][2] = a.m_max[2];
+		box[7][0] = a.m_max[0]; box[7][1] = a.m_max[1]; box[7][2] = a.m_max[2];
+		
+		int iTotalIn = 0;
+
+		// test all 8 corners against the 6 sides 
+		// if all points are behind 1 specific plane, we are out
+		// if we are in with all points, then we are fully in
+		for(int p = 0; p < 5; ++p) {
+
+			int iInCount = 8;
+			int iPtIn = 1;
+
+			for(int i = 0; i < 8; ++i) {
+
+				// test this point against the planes
+				if(planeDistance( box[i], f.planes[p] ) <= 0 ) {
+					iPtIn = 0;
+					--iInCount;
+				}
+			}
+
+			// were all the points outside of plane p?
+			if(iInCount == 0)
+				return 0;
+
+			// check if they were all on the right side of the plane
+			iTotalIn += iPtIn;
+		}
+
+		// so if iTotalIn is 6, then all are inside the view
+		if(iTotalIn == 5)
+			return 1;
+
+		// we must be partly in then otherwise
+		return 2;
+	}
 	/*FORCE_INLINE NIH_HOST_DEVICE Vector3f getVertexP(Bbox3f& box, Vector3f& normal)
 	{
 
