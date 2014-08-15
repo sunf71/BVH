@@ -55,14 +55,14 @@ void FrustumCulling(pyrfrustum_t& frustum, BVH& bvh, uint32* out)
 	{
 		Bvh_Node* node = stack[--top];
 		Bbox3f box = bvh.node_Boxes[node->id];
-		int ret = Intersect(frustum,box);
+		int ret = IntersectFast(frustum,box);
 		if (ret == 2)
 		{
 			//Ïà½»
 			if (node->l_isleaf)
 			{
 				int index = bvh.indices[node->getChild(0)];
-				if (Intersect(frustum,bvh.leaf_Boxes[index]))
+				if (IntersectFast(frustum,bvh.leaf_Boxes[index]))
 				{
 					out[index] = 1;					
 				}				
@@ -72,7 +72,7 @@ void FrustumCulling(pyrfrustum_t& frustum, BVH& bvh, uint32* out)
 			if(node->r_isleaf)
 			{
 				int index = bvh.indices[node->getChild(1)];
-				if (Intersect(frustum,bvh.leaf_Boxes[index]))
+				if (IntersectFast(frustum,bvh.leaf_Boxes[index]))
 				{
 					out[index] = 1;
 					
@@ -204,7 +204,7 @@ void CpuKlbvhTest(const thrust::host_vector<Vector3f>& h_points,
 	std::vector<uint32> out3(bvh.leafs.size(),0);
 	timer.start();
 	for(int i=0; i<bvh.leaf_Boxes.size(); i++)
-		if (Intersect(frustum,bvh.leaf_Boxes[i]))
+		if (IntersectFast(frustum,bvh.leaf_Boxes[i]))
 			out3[i]=1;
 	timer.stop();
 	in=0;

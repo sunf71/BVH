@@ -192,7 +192,55 @@ namespace nih
 			for(int i = 0; i < 8; ++i) {
 
 				// test this point against the planes
-				if(planeDistance( box[i], f.planes[p] ) <= 0 ) {
+				if(planeDistance( box[i], f.planes[p] ) > 0 ) {
+					iPtIn = 0;
+					--iInCount;
+				}
+			}
+
+			// were all the points outside of plane p?
+			if(iInCount == 0)
+				return 0;
+
+			// check if they were all on the right side of the plane
+			iTotalIn += iPtIn;
+		}
+
+		// so if iTotalIn is 6, then all are inside the view
+		if(iTotalIn == 5)
+			return 1;
+
+		// we must be partly in then otherwise
+		return 2;
+	}
+
+	FORCE_INLINE NIH_HOST_DEVICE int Intersect( TriFrustum& f, float*ptr )
+	{
+
+		Vector3f box[8];
+		box[0][0] = ptr[0]; box[0][1] = ptr[1]; box[0][2] = ptr[2];
+		box[1][0] = ptr[3]; box[1][1] = ptr[1]; box[1][2] = ptr[2];
+		box[2][0] = ptr[0]; box[2][1] = ptr[4]; box[2][2] = ptr[2];
+		box[3][0] = ptr[3]; box[3][1] = ptr[4]; box[3][2] = ptr[2];
+		box[4][0] = ptr[0]; box[4][1] = ptr[1]; box[4][2] = ptr[5];
+		box[5][0] = ptr[3]; box[5][1] = ptr[1]; box[5][2] = ptr[5];
+		box[6][0] = ptr[0]; box[6][1] = ptr[4]; box[6][2] = ptr[5];
+		box[7][0] = ptr[3]; box[7][1] = ptr[4]; box[7][2] = ptr[5];
+
+		int iTotalIn = 0;
+
+		// test all 8 corners against the 6 sides 
+		// if all points are behind 1 specific plane, we are out
+		// if we are in with all points, then we are fully in
+		for(int p = 0; p < 5; ++p) {
+
+			int iInCount = 8;
+			int iPtIn = 1;
+
+			for(int i = 0; i < 8; ++i) {
+
+				// test this point against the planes
+				if(planeDistance( box[i], f.planes[p] ) > 0 ) {
 					iPtIn = 0;
 					--iInCount;
 				}
@@ -247,7 +295,30 @@ namespace nih
 		return intersec ? 2 : 1; 
 
 	}
+	FORCE_INLINE NIH_HOST_DEVICE int IntersectFast( pyrfrustum_t& f, float*ptr)
+	{
+		bool intersec = false;
+		uint32 tableXX[2] = {3,0};
+		uint32 tableYY[2] = {4,1};
+		uint32 tableZZ[2] = {5,2};
+		uint32 tableX[2] = {0,3};
+		uint32 tableY[2] = {1,4};
+		uint32 tableZ[2] = {2,5};
+		float*p = ptr;
+		for(int i=0; i<6; i++)
+		{
+			//plane_t plane= f.planes[i];
+			uint32 sa = f.planes[i].a > 0; 
+			uint32 sb = f.planes[i].b >0; 
+			uint32 sc = f.planes[i].c > 0;
+			if (p[tableX[sa]]*f.planes[i].a + p[tableY[sb]]*f.planes[i].b + p[tableZ[sc]]*f.planes[i].c+f.planes[i].d <=0)
+				return 0;
+			if (p[tableXX[sa]]*f.planes[i].a + p[tableYY[sb]]*f.planes[i].b + p[tableZZ[sc]]*f.planes[i].c+f.planes[i].d <=0)
+				intersec = true;
 
+		}
+		return intersec ? 2 : 1; 
+	}
 	FORCE_INLINE NIH_HOST_DEVICE int Intersect( pyrfrustum_t& f, float*ptr )
 	{
 

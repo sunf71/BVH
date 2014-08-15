@@ -85,7 +85,7 @@
 copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
     <CudaCompile>
-      <CodeGeneration>compute_35,sm_35</CodeGeneration>
+      <CodeGeneration>compute_20,sm_20</CodeGeneration>
       <FastMath>true</FastMath>
     </CudaCompile>
   </ItemDefinitionGroup>
@@ -127,7 +127,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
 copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
     <CudaCompile>
-      <CodeGeneration>compute_35,sm_35</CodeGeneration>
+      <CodeGeneration>compute_20,sm_20</CodeGeneration>
       <FastMath>true</FastMath>
       <Optimization>O2</Optimization>
     </CudaCompile>

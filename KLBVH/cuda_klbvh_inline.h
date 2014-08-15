@@ -33,6 +33,7 @@ namespace cuda
 		{
 
 			int d = sgn(Theta(i,i+1,keys,n)-Theta(i,i-1,keys,n));
+			//int d = signbit(1.0*Theta(i,i-1,keys,n)-Theta(i,i+1,keys,n));
 			int tMin = Theta(i,i-d,keys,n);
 			int lMax = 128;
 			while(Theta(i,i+lMax*d,keys,n) > tMin)
